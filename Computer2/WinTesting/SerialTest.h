@@ -36,7 +36,8 @@ void testSerial()
 	if(response != R_SUCCESS)
 		printf("Failed test6");
 
-
+	char buf[] = {1<<7 | 1};
+	response = ser3->write(buf, 1);
 
 	ser->close();
 

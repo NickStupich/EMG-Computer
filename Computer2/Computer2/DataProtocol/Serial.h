@@ -12,6 +12,7 @@ public:
 	~Serial();
 	int open();
 	int close(); 
+	int write(char* buf, int len);
 
 #ifdef _WIN32
 #include "WinSerial.h"

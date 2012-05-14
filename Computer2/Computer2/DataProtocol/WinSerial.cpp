@@ -48,17 +48,7 @@ int Serial::open()
 			return R_ACCESS_DENIED;
 		}
 
-
-		WCHAR errorMsg[1024];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL,
-			err,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-			errorMsg,
-			1024, NULL);
-		
-		LOG_ERROR("CreateFile() - error message follows:");
-		LOG_ERROR((char*)errorMsg);
+		LOG_LAST_WIN_ERROR(err, "CreateFile() - error message follows:");
 
 		R_UNKNOWN_FAIL;
 	}
@@ -111,6 +101,22 @@ int Serial::close()
 	{
 		CloseHandle(this->_handle);
 		this->_isOpen = false;
+	}
+
+	return R_SUCCESS;
+}
+
+int Serial::write(char* buf, int len)
+{
+	if(!this->_isOpen)
+	{
+		return R_HANDLE_NOT_OPEN;
+	}
+
+	DWORD bytesRead;
+	if(!WriteFile(this->_handle, (LPCVOID) buf, len, &bytesRead, NULL))
+	{
+		LOG_LAST_WIN_ERROR(GetLastError(), "writing to file:");
 	}
 
 	return R_SUCCESS;
