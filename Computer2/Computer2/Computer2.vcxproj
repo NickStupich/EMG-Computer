@@ -92,6 +92,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="DataProtocol\WinSerial.cpp" />
+    <ClCompile Include="Utils\Log.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Computer2.rc" />

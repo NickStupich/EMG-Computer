@@ -1,8 +1,9 @@
 #ifdef _WIN32
 
 #include "Serial.h"
-#include "DataProtocol.h"
-#include "../Utils/Log.h"
+#include <process.h>
+
+#define READ_BUFFER_SIZE	10
 
 Serial::Serial(wchar_t* port, int baudRate, DataProtocol* protocol)
 {
@@ -86,6 +87,9 @@ int Serial::open()
 
 	this->_isOpen = true;
 
+	//start up the read thread
+	_beginthread(Serial::StaticThreadStart, 0, this);
+
 	return R_SUCCESS;
 
 error:
@@ -125,6 +129,40 @@ int Serial::write(char* buf, int len)
 Serial::~Serial()
 {
 	this->close();
+}
+
+void Serial::MemberThreadStart(void* args)
+{
+	LOG_DEBUG("Started serial port read thread");
+
+	while(this->_isOpen)
+	{
+		DWORD bytesRead;
+		unsigned char buf[READ_BUFFER_SIZE];
+		if(!ReadFile(this->_handle, buf, READ_BUFFER_SIZE, &bytesRead, NULL))
+		{
+			//LOG_LAST_WIN_ERROR(GetLastError(), "reading from file:");
+			int err = GetLastError();
+			if(err != ERROR_INVALID_HANDLE)
+			{
+				LOG_ERROR("Non-invalid handle error");
+			}
+		}
+		else
+		{
+			//successful read
+			for(unsigned int i=0;i<bytesRead;i++)
+			{
+				if(this->_protocol != NULL)
+					this->_protocol->AddByte(buf[i]);
+			}
+		}
+	}
+}
+
+void Serial::StaticThreadStart(void* args)
+{
+	static_cast<Serial*>(args)->MemberThreadStart(NULL);
 }
 
 #endif

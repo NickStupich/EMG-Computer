@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <Windows.h>
 #include "../Computer2/DataProtocol/Serial.h"
 
 #define COM_PORT	L"COM4"
@@ -11,8 +10,6 @@ void testSerial()
 	response = ser->open();
 	if(response != R_SUCCESS)
 		printf("Failed test 1");
-
-	Sleep(2000);
 
 	Serial* ser2 = new Serial(COM_PORT, 57600, NULL);
 	response = ser2->open();
@@ -38,6 +35,8 @@ void testSerial()
 
 	char buf[] = {1<<7 | 1};
 	response = ser3->write(buf, 1);
+
+	Sleep(2000);
 
 	ser->close();
 

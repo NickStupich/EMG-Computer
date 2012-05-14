@@ -4,6 +4,7 @@
 #include "DataProtocol.h"
 #include <Windows.h>
 #include "../Utils/ReturnValues.h"
+#include "../Utils/Log.h"
 
 class Serial{
 
@@ -18,6 +19,9 @@ public:
 #include "WinSerial.h"
 #endif
 
+private:
+	static void StaticThreadStart(void* args);
+	void MemberThreadStart(void* args);
 };
 
 #endif

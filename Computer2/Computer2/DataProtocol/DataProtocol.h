@@ -1,8 +1,11 @@
 #ifndef _IDATAPROTOCOL
 #define _IDATAPROTOCOL
 
-class DataProtocol{
+#include "../Utils/Log.h"
 
+class DataProtocol{
+public:
+	void AddByte(unsigned char n);
 
 };
 
