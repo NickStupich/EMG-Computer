@@ -14,9 +14,10 @@ class Serial{
 public:
 	Serial(wchar_t* port, int baudRate, DataProtocol* protocol);
 	~Serial();
-	int open();
-	int close(); 
-	int write(char* buf, int len);
+	int Open();
+	int Close(); 
+	int Write(unsigned char* buf, int len);
+	int Write(unsigned char n);
 
 #ifdef _WIN32
 #include "WinSerial.h"

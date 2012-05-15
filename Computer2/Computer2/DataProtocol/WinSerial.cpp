@@ -16,7 +16,7 @@ Serial::Serial(wchar_t* port, int baudRate, DataProtocol* protocol)
 	this->_isOpen = false;
 }
 
-int Serial::open()
+int Serial::Open()
 {
 	if(this->_isOpen)
 		return R_ALREADY_OPEN;
@@ -94,12 +94,12 @@ int Serial::open()
 
 error:
 	LOG_DEBUG("Closing handle due to error opening");
-	this->close();
+	this->Close();
 
 	return R_UNKNOWN_FAIL;
 }
 
-int Serial::close()
+int Serial::Close()
 {
 	if(this->_isOpen)
 	{
@@ -111,17 +111,35 @@ int Serial::close()
 	return R_SUCCESS;
 }
 
-int Serial::write(char* buf, int len)
+int Serial::Write(unsigned char n)
 {
+	unsigned char buf[1];
+	buf[0] = n;
+
 	if(!this->_isOpen)
 	{
 		return R_HANDLE_NOT_OPEN;
 	}
 
-	DWORD bytesRead;
-	if(!WriteFile(this->_handle, (LPCVOID) buf, len, &bytesRead, NULL))
+	DWORD bytesWritten;
+	if(!WriteFile(this->_handle, (LPCVOID) buf, 1, &bytesWritten, NULL))
 	{
 		LOG_LAST_WIN_ERROR(GetLastError(), "writing to file:");
+	}
+
+	LOG_DEBUG("Wrote 1 byte successfully: %d", (unsigned int)n);
+
+	return R_SUCCESS;
+}
+
+int Serial::Write(unsigned char* buf, int len)
+{
+	int response;
+	for(int i=0;i<len;i++)
+	{
+		response = this->Write(buf[i]);
+		if(response != R_SUCCESS)
+			return response;
 	}
 
 	return R_SUCCESS;
@@ -129,7 +147,7 @@ int Serial::write(char* buf, int len)
 
 Serial::~Serial()
 {
-	this->close();
+	this->Close();
 }
 
 void Serial::MemberThreadStart(void* args)
@@ -156,9 +174,13 @@ void Serial::MemberThreadStart(void* args)
 			{
 				if(this->_protocol != NULL)
 					this->_protocol->AddByte(buf[i]);
+				else
+					LOG_DEBUG("No protocol object, but still received: %d", (unsigned int)buf[i]);
 			}
 		}
 	}
+
+	LOG_DEBUG("Stopping serial port read thread");
 }
 
 void Serial::StaticThreadStart(void* args)

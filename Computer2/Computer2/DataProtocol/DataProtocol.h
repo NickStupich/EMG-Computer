@@ -11,8 +11,8 @@ class Serial;
 class DataProtocol{
 public:
 	DataProtocol(unsigned int channels, DataListener* dataListener);
-	int start();
-	int stop();
+	int Start();
+	int Stop();
 	~DataProtocol();
 	void AddByte(unsigned char n);
 	unsigned int** GetData();
@@ -24,8 +24,16 @@ private:
 	unsigned int _channels;
 	unsigned int _numChannels;
 
+	unsigned int _channelIndex;
+	unsigned int _dataIndex;
+
+	unsigned char _startAck;
+	bool _receivedStartAck;
+
 	Serial* _serial;
 	DataListener* _dataListener;
+
+
 };
 
 #endif
