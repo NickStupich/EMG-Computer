@@ -5,13 +5,6 @@
 #define COM_PORT		L"COM4"
 #define START_COMMAND	1<<7
 
-enum ExpectedNext{
-	CONTROL,
-	GAIN,
-	DATA,
-	FAILURE
-};
-
 #define ONES_IN_BYTE(x)	(x&(1<<7)) + (x&(1<<6)) + (x&(1<<5)) + (x&(1<<4)) + (x&(1<<3)) + (x&(1<<2)) + (x&(1<<1)) + (x&1)
 
 DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
@@ -34,6 +27,7 @@ DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 
 	this->_dataListener = dataListener;
 	this->_serial = new Serial(COM_PORT, 57600, this);
+	this->_dataMutex = new BMutex();
 }
 
 int DataProtocol::Start()
@@ -41,6 +35,7 @@ int DataProtocol::Start()
 	int response;
 
 	this->_receivedStartAck = false;
+	this->_expected = FIRST;
 
 	response = this->_serial->Open();
 	if(response != R_SUCCESS)
@@ -101,6 +96,20 @@ int DataProtocol::Stop()
 	return R_SUCCESS;
 }
 
+int DataProtocol::GetData(unsigned int** data)
+{
+	this->_dataMutex->lock();
+
+	for(unsigned int i=0;i<this->_numChannels;i++)
+	{
+		memcpy(this->_cleanData[i], data[i], sizeof(int) * DATA_LENGTH);
+	}
+
+	this->_dataMutex->unlock();
+
+	return R_SUCCESS;
+}
+
 void DataProtocol::AddByte(unsigned char n)
 {
 	if(!this->_receivedStartAck)
@@ -110,9 +119,111 @@ void DataProtocol::AddByte(unsigned char n)
 		return;
 	}
 
-	LOG_DEBUG("Received byte: %d", (unsigned int)n);
+	//LOG_DEBUG("Received byte: %d", (unsigned int)n);
 
+	switch(this->_expected)
+	{
 
+	case FIRST:
+		if(n != CONTROL_BYTE)
+		{
+			LOG_ERROR("did not receive control byte first, instead got %d", n);
+		}
+		else
+		{
+			this->_expected = GAIN;
+		}
+		break;
+
+	case FAILURE:
+		if(n == CONTROL_BYTE)
+		{
+			LOG_DEBUG("Received control byte in failure state");
+			this->_channelIndex = 0;
+			this->_dataIndex = 0;
+			this->_expected = GAIN;
+		}
+		break;
+
+	case CONTROL:
+		if(n == CONTROL_BYTE)
+		{
+			if(this->_dataListener != NULL)
+			{
+				LOG_DEBUG("Got complete data chunk");
+
+				this->_dataMutex->lock();
+
+				//copy raw data to clean data
+				for(unsigned int i=0;i<this->_numChannels;i++)
+				{
+					for(int j=0;j<DATA_LENGTH;j++)
+					{
+						this->_cleanData[i][j] = this->_gains[i] * this->_rawData[i][j];
+					}
+				}
+
+				this->_dataMutex->unlock();
+				
+				
+				//TODO:  figure out the interfacing with data listener here
+
+			}
+
+			this->_channelIndex = 0;
+			this->_dataIndex = 0;
+			this->_expected = GAIN;
+		}
+		else
+		{
+			LOG_ERROR("Expected control byte, instead received %d", n);
+			this->_expected = FAILURE;
+		}
+		break;
+
+	case GAIN:
+		if(n == CONTROL_BYTE)
+		{
+			LOG_ERROR("Expected gain, received control byte");
+			this->_expected = FAILURE;
+		}
+		else
+		{
+			this->_gains[this->_channelIndex] = n;
+			this->_expected = DATA;
+		}
+		break;
+
+	case DATA:
+		if(n == CONTROL_BYTE)
+		{
+			LOG_ERROR("Expected data, received control byte");
+			this->_expected = FAILURE;
+		}
+		else
+		{
+			this->_rawData[this->_channelIndex][this->_dataIndex] = n;
+			this->_dataIndex++;
+
+			if(this->_dataIndex == DATA_LENGTH)
+			{
+				this->_dataIndex = 0;
+				this->_channelIndex ++;
+
+				if(this->_channelIndex == this->_numChannels)
+				{
+					this->_channelIndex = 0;
+					this->_expected = CONTROL;
+				}
+				else
+				{
+					this->_expected = GAIN;
+				}
+			}
+		}
+
+		break;
+	}
 
 }
 

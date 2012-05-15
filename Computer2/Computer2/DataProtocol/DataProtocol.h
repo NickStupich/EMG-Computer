@@ -4,6 +4,15 @@
 #include "../Utils/Log.h"
 #include "DataListener.h"
 #include "Serial.h"
+#include "../Utils/Mutex.h"
+
+enum ExpectedNext{
+	CONTROL,
+	GAIN,
+	DATA,
+	FAILURE,
+	FIRST
+};
 
 //avoid a circular dependency compilation problem
 class Serial;
@@ -15,7 +24,7 @@ public:
 	int Stop();
 	~DataProtocol();
 	void AddByte(unsigned char n);
-	unsigned int** GetData();
+	int GetData(unsigned int** data);
 
 private:
 	unsigned int* _gains;
@@ -27,13 +36,15 @@ private:
 	unsigned int _channelIndex;
 	unsigned int _dataIndex;
 
+
 	unsigned char _startAck;
 	bool _receivedStartAck;
+	ExpectedNext _expected;
 
 	Serial* _serial;
 	DataListener* _dataListener;
 
-
+	BMutex* _dataMutex;
 };
 
 #endif
