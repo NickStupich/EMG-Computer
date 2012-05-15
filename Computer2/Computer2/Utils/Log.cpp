@@ -4,7 +4,7 @@ FILE* fp;
 BMutex* _mutex = new BMutex();
 Priority _priority = Debug;
 
-void log(Priority priority, char* file, char* function, int line, char* msg)
+void log(Priority priority, char* file, char* function, int line, char* msg, ...)
 {
 	if(priority >= _priority)
 	{
@@ -53,7 +53,14 @@ void log(Priority priority, char* file, char* function, int line, char* msg)
 		char timebuf[20];
 		strftime(timebuf, strlen(timebuf), "%c", timeinfo);
 
-		fprintf(fp, "%s\t%s: %s()\tline %d:\t%s\n", timebuf, file, function, line, msg);
+		char msgBuf[1024];
+		va_list argptr;
+		va_start(argptr, msg);
+		vsprintf_s(msgBuf, 1024, msg, argptr);
+		va_end(argptr);
+
+
+		fprintf(fp, "%s\t%s: %s()\tline %d:\t%s\n", timebuf, file, function, line, msgBuf);
 
 		end:
 		_mutex->unlock();
