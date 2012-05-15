@@ -48,6 +48,9 @@
     <ClInclude Include="DataProtocol\DataListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DataProtocol\SerialPortLocation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -60,6 +63,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataProtocol\Datalistener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataProtocol\WinSerialPortLocation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

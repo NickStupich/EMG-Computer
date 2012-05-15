@@ -2,12 +2,15 @@
 
 #include "SerialTest.h"
 #include "ProtocolTest.h"
+#include "PortLocationTest.h"
 
 
 int main(int argc, char* argv[])
 {
 	//testSerial();
-	testProtocol();
+	//testProtocol();
+	testPortLocation();
+	
 	printf("done testing, enter to quit\n");
 	getchar();
 	return 0;

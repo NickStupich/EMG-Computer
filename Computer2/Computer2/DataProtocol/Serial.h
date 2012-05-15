@@ -18,6 +18,7 @@ public:
 	int Close(); 
 	int Write(unsigned char* buf, int len);
 	int Write(unsigned char n);
+	bool isOpen() {return this->_isOpen;}
 
 #ifdef _WIN32
 #include "WinSerial.h"
@@ -27,6 +28,7 @@ private:
 	static void StaticThreadStart(void* args);
 	void MemberThreadStart(void* args);
 	DataProtocol* _protocol;
+	bool _isOpen;
 };
 
 #endif
