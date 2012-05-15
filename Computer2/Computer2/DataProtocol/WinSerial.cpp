@@ -88,7 +88,7 @@ int Serial::open()
 	this->_isOpen = true;
 
 	//start up the read thread
-	_beginthread(Serial::StaticThreadStart, 0, this);
+	this->_readThreadHandle = (HANDLE) _beginthread(Serial::StaticThreadStart, 0, this);
 
 	return R_SUCCESS;
 
@@ -103,8 +103,9 @@ int Serial::close()
 {
 	if(this->_isOpen)
 	{
-		CloseHandle(this->_handle);
 		this->_isOpen = false;
+		//read thread will automatically stop once _isOpen is false
+		CloseHandle(this->_handle);
 	}
 
 	return R_SUCCESS;

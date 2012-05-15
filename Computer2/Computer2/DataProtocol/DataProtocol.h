@@ -5,6 +5,9 @@
 #include "DataListener.h"
 #include "Serial.h"
 
+//avoid a circular dependency compilation problem
+class Serial;
+
 class DataProtocol{
 public:
 	DataProtocol(unsigned int channels, DataListener* dataListener);

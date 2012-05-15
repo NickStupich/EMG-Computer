@@ -6,6 +6,9 @@
 #include "../Utils/ReturnValues.h"
 #include "../Utils/Log.h"
 
+//avoid a circular dependency compilation problem
+class DataProtocol;
+
 class Serial{
 
 public:
@@ -22,6 +25,7 @@ public:
 private:
 	static void StaticThreadStart(void* args);
 	void MemberThreadStart(void* args);
+	DataProtocol* _protocol;
 };
 
 #endif
