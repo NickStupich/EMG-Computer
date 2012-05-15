@@ -75,6 +75,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataProtocol\DataListener.h" />
     <ClInclude Include="DataProtocol\DataProtocol.h" />
     <ClInclude Include="DataProtocol\Serial.h" />
     <ClInclude Include="Utils\Log.h" />
