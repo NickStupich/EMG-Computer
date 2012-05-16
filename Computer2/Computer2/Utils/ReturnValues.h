@@ -14,5 +14,7 @@
 #define R_WRONG_START_ACK		9
 #define R_PORT_NOT_KNOWN		10
 
+#define R_NO_DATA_AVAILABLE		11
+
 
 #endif

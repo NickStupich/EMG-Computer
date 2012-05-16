@@ -1,5 +1,11 @@
 #include "DataProtocol.h"
 #include "SerialPortLocation.h"
+#include "../Utils/Constants.h"
+
+//threading
+#ifdef WIN32
+#include <process.h>
+#endif
 
 #define CONTROL_BYTE	255
 #define DATA_LENGTH		8
@@ -66,25 +72,30 @@ int DataProtocol::Start()
 
 	//should probably use something like WaitForSingleObject() here, but thats not cross-platform so oh well
 	clock_t start = clock();
-	while(!this->_receivedStartAck && (clock() - start) *1000 / CLOCKS_PER_SEC < 2000)
+	while(!this->_receivedStartAck && (clock() - start) *1000 / CLOCKS_PER_SEC < START_ACK_TIMEOUT_MS)
 	{
 		Sleep(50);
 	}
 
 	if(!this->_receivedStartAck)
-		{
-			LOG_ERROR("Failed to receive start ack in time");
-			return R_START_ACK_TIMEOUT;
-		}
+	{
+		LOG_ERROR("Failed to receive start ack in time");
+		this->Stop();
+		return R_START_ACK_TIMEOUT;
+	}
 
-		LOG_DEBUG("Start ack delay time: %d ms", (clock() - start)*1000 / CLOCKS_PER_SEC);
+	LOG_DEBUG("Start ack delay time: %d ms", (clock() - start)*1000 / CLOCKS_PER_SEC);
 		
-		if(this->_startAck != (unsigned char)(START_COMMAND | this->_channels))
-		{
-			LOG_ERROR("Improper start ack.  Received: %d    Expected: %d", this->_startAck, this->_channels | START_COMMAND);
-			return R_WRONG_START_ACK;
-		}
+	if(this->_startAck != (unsigned char)(START_COMMAND | this->_channels))
+	{
+		LOG_ERROR("Improper start ack.  Received: %d    Expected: %d", this->_startAck, this->_channels | START_COMMAND);
+		this->Stop();
+		return R_WRONG_START_ACK;
+	}
 
+	//start the thread that actually interfaces with an application / algorithm
+	this->_syncThreadHandle = (HANDLE) _beginthread(DataProtocol::StaticThreadStart, 0, this);
+	
 	return R_SUCCESS;
 }
 
@@ -94,6 +105,7 @@ int DataProtocol::Stop()
 	if(response != R_SUCCESS)
 	{
 		LOG_ERROR("Writing 0 to stop serial port communication - response code %d", response);
+		this->_serial->Close();
 		return R_UNKNOWN_FAIL;
 	}
 
@@ -107,13 +119,17 @@ int DataProtocol::Stop()
 	return R_SUCCESS;
 }
 
-int DataProtocol::GetData(unsigned int** data)
+int DataProtocol::GetData(unsigned int*** data)
 {
+	if(this->_expected == FIRST)
+	{
+		return R_NO_DATA_AVAILABLE;
+	}
 	this->_dataMutex->lock();
 
 	for(unsigned int i=0;i<this->_numChannels;i++)
 	{
-		memcpy(this->_cleanData[i], data[i], sizeof(int) * DATA_LENGTH);
+		memcpy(this->_cleanData[i], (*data)[i], sizeof(int) * DATA_LENGTH);
 	}
 
 	this->_dataMutex->unlock();
@@ -238,3 +254,18 @@ void DataProtocol::AddByte(unsigned char n)
 
 }
 
+void DataProtocol::StaticThreadStart(void* args)
+{
+	static_cast<DataProtocol*>(args)->MemberThreadStart();
+}
+
+void DataProtocol::MemberThreadStart()
+{
+	LOG_DEBUG("Started data protocol synchronization thread");
+	while(this->_serial != NULL && this->_serial->isOpen());
+	{
+
+	}
+
+	LOG_DEBUG("Stopping data protocol synchronization thread");
+}

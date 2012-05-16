@@ -19,17 +19,46 @@ class Serial;
 
 class DataProtocol{
 public:
+
+	/* External functions to be called */
+
+
+	/*
+	Initializes data protocol for the provided channels
+	Each bit in channels indicates whether the channel should be on.
+	Ex: channels = 3 = 0000 0011b
+	-> Channels 0 and 1 are on
+
+	dataListener can be provided to receive updates with new data, or null and
+	GetData() can be polled for new data
+	*/
 	DataProtocol(unsigned int channels, DataListener* dataListener);
+
+	/*
+	Starts the bluetooth connection, sends appropriate start command,
+	threads and whatnot to read serial data
+	*/
 	int Start();
+
+	/*
+	Sends stop byte, stops threads, closes bluetooth connection
+	*/
 	int Stop();
+
+	/*
+	makes a copy of the current data to the provided address
+	enough memory must already be allocated for the copy
+	*/
+	int GetData(unsigned int*** data);
+
 	~DataProtocol();
 	void AddByte(unsigned char n);
-	int GetData(unsigned int** data);
 
 private:
 	unsigned int* _gains;
 	unsigned int** _rawData;
 	unsigned int** _cleanData;
+	unsigned int** _applicationData;
 	unsigned int _channels;
 	unsigned int _numChannels;
 
@@ -45,6 +74,10 @@ private:
 	DataListener* _dataListener;
 
 	BMutex* _dataMutex;
+
+	static void StaticThreadStart(void* args);
+	void MemberThreadStart();
+	HANDLE _syncThreadHandle;
 };
 
 #endif
