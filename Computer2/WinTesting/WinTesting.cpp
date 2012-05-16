@@ -7,8 +7,10 @@
 
 int main(int argc, char* argv[])
 {
-	//testSerial();
-	//testProtocol();
+	testSerial();
+	testProtocol();
+	
+	//createRegistryKeys();
 	testPortLocation();
 	
 	printf("done testing, enter to quit\n");

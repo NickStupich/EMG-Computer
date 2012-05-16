@@ -4,50 +4,43 @@
 #include <Windows.h>
 #include "../Utils/Log.h"
 #include "../Utils/ReturnValues.h"
+#include "../Utils/Constants.h"
 
-int GetPortLocation(wchar_t* buf)
+int GetPortLocation(wchar_t** buf)
 {
-	HKEY hKey;
-	DWORD dwType, dwSize;
-	DWORD dwDisposition;
+	HKEY key;
+	*buf = new wchar_t[PORT_ADDRESS_BUFFER_LENGTH];
+	DWORD bufLen = lstrlen(*buf);
+	long ret;
+	LPDWORD type = 0;
 
-	DWORD response;
-	/*
-	response = RegQueryValueEx(	HKEY_LOCAL_MACHINE,
-								TEXT("Software\\MuscleMate")
+	ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+						TEXT("SOFTWARE\\MuscleMate"),
+						0, 
+						KEY_QUERY_VALUE,
+						&key);
 
-	response = RegCreateKeyEx(	HKEY_LOCAL_MACHINE, 
-								TEXT("Software\\MuscleMate"),
-								0, 
-								NULL,
-								0,
-								0,
-								NULL,
-								&hKey,
-								&dwDisposition);
-
-	if(response != ERROR_SUCCESS)
+	if(ret != ERROR_SUCCESS)
 	{
-		LOG_ERROR("Unable to open registry 'folder' with error %d", response);
+		LOG_ERROR("Opening MuscleMate reg key, error code: %d", ret);
 		return R_UNKNOWN_FAIL;
 	}
 
-	char internalBuf[100];
-	DWORD cbData = 100;
+	ret = RegQueryValueEx(	key,
+							TEXT("Serial"),
+							0,
+							0,
+							(LPBYTE) (*buf),
+							&bufLen);
 
-	response = RegQueryValueEx(	hKey,
-								TEXT("SerialPort"),
-								NULL,
-								NULL,
-								(LPBYTE)internalBuf,
-								&cbData);
-
-	if(response != ERROR_SUCCESS)
+	if(ret != ERROR_SUCCESS)
 	{
-		LOG_ERROR("Unable to open registry key for serial port, error %d", response);
+		LOG_ERROR("Opening Serial reg key, error code: %d", ret);
 		return R_UNKNOWN_FAIL;
 	}
-	*/
+
+	RegCloseKey(key);
+
 	return R_SUCCESS;
 }
 

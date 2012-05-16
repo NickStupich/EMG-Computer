@@ -79,6 +79,7 @@
     <ClInclude Include="DataProtocol\DataProtocol.h" />
     <ClInclude Include="DataProtocol\Serial.h" />
     <ClInclude Include="DataProtocol\SerialPortLocation.h" />
+    <ClInclude Include="Utils\Constants.h" />
     <ClInclude Include="Utils\Log.h" />
     <ClInclude Include="Utils\Mutex.h" />
     <ClInclude Include="Utils\ReturnValues.h" />

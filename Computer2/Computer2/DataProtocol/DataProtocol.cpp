@@ -1,4 +1,5 @@
 #include "DataProtocol.h"
+#include "SerialPortLocation.h"
 
 #define CONTROL_BYTE	255
 #define DATA_LENGTH		8
@@ -26,13 +27,23 @@ DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 	this->_dataIndex = 0;
 
 	this->_dataListener = dataListener;
-	this->_serial = new Serial(COM_PORT, 57600, this);
+	
 	this->_dataMutex = new BMutex();
 }
 
 int DataProtocol::Start()
 {
 	int response;
+
+	wchar_t* portAddr;
+	response = GetPortLocation(&portAddr);
+	if(response != R_SUCCESS)
+	{
+		LOG_ERROR("Get port location failed with code: %d", response);
+		return R_PORT_NOT_KNOWN;
+	}
+
+	this->_serial = new Serial(portAddr, 57600, this);
 
 	this->_receivedStartAck = false;
 	this->_expected = FIRST;

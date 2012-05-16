@@ -9,22 +9,11 @@
 #define LOG_DEBUG(msg, ...) log(Debug, __FILE__, __FUNCTION__, __LINE__, msg, ##__VA_ARGS__)
 #define LOG_ERROR(msg, ...) log(Error, __FILE__, __FUNCTION__, __LINE__, msg, ##__VA_ARGS__)
 
-#define LOG_LAST_WIN_ERROR(errorNumber, msg)		WCHAR errorMsg[1024]; \
-													FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, \
-													NULL,\
-													errorNumber,\
-													MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),\
-													errorMsg,\
-													1024, NULL);\
-													LOG_ERROR(msg);\
-													LOG_ERROR((char*)errorMsg);\
-
-
 enum Priority{
-	Debug = 1,
-	Info = 2,
-	Error = 3,
-	None = 4
+	Debug = 0,
+	Info = 1,
+	Error = 2,
+	None = 3
 };
 
 void log(Priority priority, char* file, char* function, int line, char* msg, ...);

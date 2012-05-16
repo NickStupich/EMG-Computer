@@ -18,6 +18,9 @@ Serial::Serial(wchar_t* port, int baudRate, DataProtocol* protocol)
 
 int Serial::Open()
 {
+	DCB dcbParams = {0};
+	COMMTIMEOUTS timeouts = {0};
+
 	if(this->_isOpen)
 		return R_ALREADY_OPEN;
 
@@ -49,12 +52,11 @@ int Serial::Open()
 			return R_ACCESS_DENIED;
 		}
 
-		LOG_LAST_WIN_ERROR(err, "CreateFile() - error message follows:");
+		LOG_ERROR("CreateFile() - error code: %d", err);
 
 		R_UNKNOWN_FAIL;
 	}
 
-	DCB dcbParams = {0};
 	dcbParams.DCBlength = sizeof(dcbParams);
 	if(!GetCommState(this->_handle, &dcbParams))
 	{
@@ -72,7 +74,6 @@ int Serial::Open()
 		goto error;
 	}
 
-	COMMTIMEOUTS timeouts = {0};
 	timeouts.ReadIntervalTimeout = 50;
 	timeouts.ReadTotalTimeoutConstant = 50;
 	timeouts.ReadTotalTimeoutMultiplier = 10;
@@ -124,10 +125,12 @@ int Serial::Write(unsigned char n)
 	DWORD bytesWritten;
 	if(!WriteFile(this->_handle, (LPCVOID) buf, 1, &bytesWritten, NULL))
 	{
-		LOG_LAST_WIN_ERROR(GetLastError(), "writing to file:");
+		LOG_ERROR("writing to file error code: %d", GetLastError());
 	}
-
-	LOG_DEBUG("Wrote 1 byte successfully: %d", (unsigned int)n);
+	else
+	{
+		LOG_DEBUG("Wrote 1 byte successfully: %d", (unsigned int)n);
+	}
 
 	return R_SUCCESS;
 }

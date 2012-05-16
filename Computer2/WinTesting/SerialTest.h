@@ -6,7 +6,8 @@
 void testSerial()
 {
 	int response;
-	
+	printf("Running serial test");
+
 	Serial* ser = new Serial(COM_PORT, 57600, NULL);
 	response = ser->Open();
 	if(response != R_SUCCESS)
@@ -35,6 +36,14 @@ void testSerial()
 		printf("Failed test6");
 
 	response = ser3->Write(1<<7 | 1);
+	if(response != R_SUCCESS)
+		printf("Failed test7");
+
+	//need this here to stop the microcontroller
+	response = ser3->Write(0);
+	if(response != R_SUCCESS)
+		printf("Failed test8");
+
 
 	Sleep(2000);
 

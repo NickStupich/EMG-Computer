@@ -1,3 +1,3 @@
 
 
-int GetPortLocation(wchar_t* buf);
+int GetPortLocation(wchar_t** buf);

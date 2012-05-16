@@ -12,7 +12,7 @@
 #define R_SERIAL_WRITE_FAILED	7
 #define R_START_ACK_TIMEOUT		8
 #define R_WRONG_START_ACK		9
-
+#define R_PORT_NOT_KNOWN		10
 
 
 #endif
