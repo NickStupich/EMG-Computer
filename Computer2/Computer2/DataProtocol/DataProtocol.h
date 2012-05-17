@@ -84,6 +84,7 @@ private:
 	HANDLE _dataReadyEvent;
 
 	void CopyData(unsigned int*** source, unsigned int *** destination);
+	int DoStart();
 };
 
 #endif

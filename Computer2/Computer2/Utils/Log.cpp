@@ -67,6 +67,7 @@ void log(Priority priority, char* file, char* function, int line, char* msg, ...
 
 		fprintf(fp, "%s\t%s.%.3d\t%s: %s()\tline %d:\t%s\n",
 			levels[(int)priority], timebuf, tstruct.millitm, file, function, line, msgBuf);
+		fflush(fp);
 
 		end:
 		_mutex->unlock();

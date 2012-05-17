@@ -46,6 +46,23 @@ DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 int DataProtocol::Start()
 {
 	int response;
+	for(int retry = 0; retry < NUM_RETRIES_START;retry++)
+	{
+		response = this->DoStart();
+		if(response == R_SUCCESS)
+			return R_SUCCESS;
+
+		LOG_ERROR("Start attempt %d / %d failed with error code %d", retry, NUM_RETRIES_START, response);
+		this->Stop();
+	}
+
+	//if we failed 3 times return the last error code
+	return response;
+}
+
+int DataProtocol::DoStart()
+{
+	int response;
 
 	wchar_t* portAddr;
 	this->_isFirstLoop = true;

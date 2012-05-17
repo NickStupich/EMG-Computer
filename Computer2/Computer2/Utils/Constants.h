@@ -3,5 +3,7 @@
 #define START_ACK_TIMEOUT_MS			2000
 #define DATA_TIMEOUT_MS					200
 #define DATA_TIMEOUT_MS_FIRST_LOOP		1000
-#define NUM_RETRIES						3
 #define DATA_STOP_TIMEOUT				5000
+
+
+#define NUM_RETRIES_START				3
