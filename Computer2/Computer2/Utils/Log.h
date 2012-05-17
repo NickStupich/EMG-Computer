@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <direct.h>
+#include <sys/timeb.h>
 
 #define LOG_DEBUG(msg, ...) log(Debug, __FILE__, __FUNCTION__, __LINE__, msg, ##__VA_ARGS__)
 #define LOG_ERROR(msg, ...) log(Error, __FILE__, __FUNCTION__, __LINE__, msg, ##__VA_ARGS__)

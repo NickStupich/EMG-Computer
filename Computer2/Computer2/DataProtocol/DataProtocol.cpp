@@ -36,6 +36,12 @@ DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 	
 	this->_dataMutex = new NMutex();
 	this->_serial = NULL;
+
+	this->_dataReadyEvent = CreateEvent(	NULL, 
+											true, 
+											false, 
+											NULL);
+
 }
 
 int DataProtocol::Start()
@@ -95,8 +101,10 @@ int DataProtocol::Start()
 	}
 
 	//start the thread that actually interfaces with an application / algorithm
-	this->_syncThreadHandle = (HANDLE) _beginthread(DataProtocol::StaticThreadStart, 0, this);
 	
+	this->_syncThreadHandle = (HANDLE) _beginthread(	DataProtocol::StaticThreadStart, 
+														0, 
+														this);
 	return R_SUCCESS;
 }
 
@@ -181,7 +189,7 @@ void DataProtocol::AddByte(unsigned char n)
 		{
 			if(this->_dataListener != NULL)
 			{
-				LOG_DEBUG("Got complete data chunk");
+				//LOG_DEBUG("Got complete data chunk");
 
 				this->_dataMutex->lock();
 
@@ -196,9 +204,9 @@ void DataProtocol::AddByte(unsigned char n)
 
 				this->_dataMutex->unlock();
 				
-				
-				//TODO:  figure out the interfacing with data listener here
-
+				//signal the synchronization thread that there is data ready
+				SetEvent(this->_dataReadyEvent);
+				//LOG_DEBUG("Set data ready event");
 			}
 
 			this->_channelIndex = 0;
@@ -263,12 +271,70 @@ void DataProtocol::StaticThreadStart(void* args)
 	static_cast<DataProtocol*>(args)->MemberThreadStart();
 }
 
+void DataProtocol::CopyData(unsigned int*** source, unsigned int*** destination)
+{
+	for(unsigned int i=0;i<this->_numChannels;i++)
+	{
+		memcpy(*source[i], &destination[i], DATA_LENGTH * sizeof(unsigned int));
+	}
+}
+
 void DataProtocol::MemberThreadStart()
 {
-	LOG_DEBUG("Started data protocol synchronization thread");
-	while(this->_serial != NULL && this->_serial->isOpen());
+	DWORD response;
+	unsigned int** externalData = new unsigned int*[this->_numChannels];
+	for(unsigned int i=0;i<this->_numChannels;i++)
 	{
+		externalData[i] = new unsigned int[DATA_LENGTH];
+	}
 
+	LOG_DEBUG("Started data protocol synchronization thread");
+	while(this->_serial->isOpen())
+	{
+		//LOG_DEBUG("Before waitforsingleobject");
+		response = WaitForSingleObject(	this->_dataReadyEvent,
+										DATA_TIMEOUT_MS);
+		//LOG_DEBUG("waitforsingleobject returned %d", response);
+		switch(response)
+		{
+		case WAIT_OBJECT_0:
+			response = ResetEvent(this->_dataReadyEvent);
+			if(response == 0)
+			{
+				LOG_ERROR("failed to reset data ready event, last error: %d", GetLastError());
+			}
+			else
+			{
+				if(this->_dataListener != NULL)
+				{
+					this->_dataMutex->lock();
+					this->CopyData(&externalData, &this->_cleanData);
+					this->_dataMutex->unlock();
+
+					this->_dataListener->OnNewData(externalData);
+				}
+			}
+			break;
+
+		case WAIT_TIMEOUT:
+			//in case the connection stops once we're already inside the loop
+			if(this->_serial == NULL || !this->_serial->isOpen())
+				break;
+
+			LOG_ERROR("WaitforSingleObject timed out on the data sync thread");
+			if(this->_dataListener != NULL)
+			{
+				this->_dataListener->OnError(BACKEND_ERROR_TIMEOUT);
+			}
+			break;
+
+		case WAIT_ABANDONED:
+		case WAIT_FAILED:
+			LOG_ERROR("WaitForSingleObject failed in the data synchronization thread, return value: %d", response);
+			break;
+		default:
+			LOG_ERROR("reached default part of switch statement that we shouldn't have, code: %d", response);
+		}
 	}
 
 	LOG_DEBUG("Stopping data protocol synchronization thread");

@@ -68,9 +68,6 @@
     <ClCompile Include="Utils\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DataProtocol\Datalistener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DataProtocol\WinSerialPortLocation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

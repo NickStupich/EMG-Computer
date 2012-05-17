@@ -6,6 +6,8 @@
 #include "Serial.h"
 #include "../Utils/NMutex.h"
 
+#define BACKEND_ERROR_TIMEOUT		10
+
 enum ExpectedNext{
 	CONTROL,
 	GAIN,
@@ -78,6 +80,9 @@ private:
 	static void StaticThreadStart(void* args);
 	void MemberThreadStart();
 	HANDLE _syncThreadHandle;
+	HANDLE _dataReadyEvent;
+
+	void CopyData(unsigned int*** source, unsigned int *** destination);
 };
 
 #endif

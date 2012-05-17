@@ -12,8 +12,11 @@ void log(Priority priority, char* file, char* function, int line, char* msg, ...
 	{
 		time_t rawtime;
 		struct tm* timeinfo;
+		struct _timeb tstruct;
 		time(&rawtime);
 		timeinfo = localtime(&rawtime);
+		_ftime(&tstruct);
+
 
 		file += strlen(file)-2;
 		while(*(file-1) != '\\'){file--;};
@@ -53,7 +56,7 @@ void log(Priority priority, char* file, char* function, int line, char* msg, ...
 		}
 
 		char timebuf[20];
-		strftime(timebuf, strlen(timebuf), "%c", timeinfo);
+		strftime(timebuf, strlen(timebuf), "%X", timeinfo);
 
 		char msgBuf[1024];
 		va_list argptr;
@@ -62,7 +65,8 @@ void log(Priority priority, char* file, char* function, int line, char* msg, ...
 		va_end(argptr);
 
 
-		fprintf(fp, "%s\t%s\t%s: %s()\tline %d:\t%s\n", levels[(int)priority], timebuf, file, function, line, msgBuf);
+		fprintf(fp, "%s\t%s.%.3d\t%s: %s()\tline %d:\t%s\n",
+			levels[(int)priority], timebuf, tstruct.millitm, file, function, line, msgBuf);
 
 		end:
 		_mutex->unlock();

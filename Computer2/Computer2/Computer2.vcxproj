@@ -89,7 +89,6 @@
     <ClInclude Include="DataProtocol\WinSerial.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DataProtocol\Datalistener.cpp" />
     <ClCompile Include="DataProtocol\DataProtocol.cpp" />
     <ClCompile Include="DataProtocol\WinSerialPortLocation.cpp" />
     <ClCompile Include="stdafx.cpp">
