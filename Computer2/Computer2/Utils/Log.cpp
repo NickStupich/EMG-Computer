@@ -1,7 +1,7 @@
 #include "Log.h"
 
 FILE* fp;
-BMutex* _mutex = new BMutex();
+NMutex* _mutex = new NMutex();
 Priority _priority = Debug;
 
 char* levels[] = {"DEBUG", "INFO", "ERROR"};

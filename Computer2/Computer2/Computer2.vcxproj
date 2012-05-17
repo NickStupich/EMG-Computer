@@ -81,7 +81,7 @@
     <ClInclude Include="DataProtocol\SerialPortLocation.h" />
     <ClInclude Include="Utils\Constants.h" />
     <ClInclude Include="Utils\Log.h" />
-    <ClInclude Include="Utils\Mutex.h" />
+    <ClInclude Include="Utils\NMutex.h" />
     <ClInclude Include="Utils\ReturnValues.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -98,6 +98,7 @@
     </ClCompile>
     <ClCompile Include="DataProtocol\WinSerial.cpp" />
     <ClCompile Include="Utils\Log.cpp" />
+    <ClCompile Include="Utils\NMutex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Computer2.rc" />

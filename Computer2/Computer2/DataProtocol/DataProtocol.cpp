@@ -34,7 +34,8 @@ DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 
 	this->_dataListener = dataListener;
 	
-	this->_dataMutex = new BMutex();
+	this->_dataMutex = new NMutex();
+	this->_serial = NULL;
 }
 
 int DataProtocol::Start()
@@ -101,19 +102,22 @@ int DataProtocol::Start()
 
 int DataProtocol::Stop()
 {
-	int response = this->_serial->Write(0);
-	if(response != R_SUCCESS)
+	if(this->_serial != NULL && this->_serial->isOpen())
 	{
-		LOG_ERROR("Writing 0 to stop serial port communication - response code %d", response);
-		this->_serial->Close();
-		return R_UNKNOWN_FAIL;
-	}
+		int response = this->_serial->Write(0);
+		if(response != R_SUCCESS)
+		{
+			LOG_ERROR("Writing 0 to stop serial port communication - response code %d", response);
+			this->_serial->Close();
+			return R_UNKNOWN_FAIL;
+		}
 
-	response = this->_serial->Close();
-	if(response != R_SUCCESS)
-	{
-		LOG_ERROR("closing serial port - response code %d", response);
-		return R_UNKNOWN_FAIL;
+		response = this->_serial->Close();
+		if(response != R_SUCCESS)
+		{
+			LOG_ERROR("closing serial port - response code %d", response);
+			return R_UNKNOWN_FAIL;
+		}
 	}
 
 	return R_SUCCESS;

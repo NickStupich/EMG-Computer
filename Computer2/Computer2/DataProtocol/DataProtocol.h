@@ -4,7 +4,7 @@
 #include "../Utils/Log.h"
 #include "DataListener.h"
 #include "Serial.h"
-#include "../Utils/Mutex.h"
+#include "../Utils/NMutex.h"
 
 enum ExpectedNext{
 	CONTROL,
@@ -73,7 +73,7 @@ private:
 	Serial* _serial;
 	DataListener* _dataListener;
 
-	BMutex* _dataMutex;
+	NMutex* _dataMutex;
 
 	static void StaticThreadStart(void* args);
 	void MemberThreadStart();

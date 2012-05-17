@@ -1,7 +1,7 @@
 #ifndef _LOGGING
 #define _LOGGING
 
-#include "Mutex.h"
+#include "NMutex.h"
 #include <stdio.h>
 #include <time.h>
 #include <direct.h>
