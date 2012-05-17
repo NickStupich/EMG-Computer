@@ -70,6 +70,7 @@ private:
 
 	unsigned char _startAck;
 	bool _receivedStartAck;
+	bool _isFirstLoop;
 	ExpectedNext _expected;
 
 	Serial* _serial;

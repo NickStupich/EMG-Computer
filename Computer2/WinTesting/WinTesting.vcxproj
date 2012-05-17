@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PortLocationTest.h" />
+    <ClInclude Include="ProtocolIntegrationTest.h" />
     <ClInclude Include="ProtocolTest.h" />
     <ClInclude Include="SerialTest.h" />
   </ItemGroup>

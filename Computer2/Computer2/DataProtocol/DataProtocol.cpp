@@ -28,7 +28,7 @@ DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 		this->_rawData[i] = new unsigned int[DATA_LENGTH];
 		this->_cleanData[i] = new unsigned int[DATA_LENGTH];
 	}
-
+	
 	this->_channelIndex = 0;
 	this->_dataIndex = 0;
 
@@ -41,7 +41,6 @@ DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 											true, 
 											false, 
 											NULL);
-
 }
 
 int DataProtocol::Start()
@@ -49,6 +48,8 @@ int DataProtocol::Start()
 	int response;
 
 	wchar_t* portAddr;
+	this->_isFirstLoop = true;
+
 	response = GetPortLocation(&portAddr);
 	if(response != R_SUCCESS)
 	{
@@ -70,14 +71,10 @@ int DataProtocol::Start()
 	response = this->_serial->Write(START_COMMAND | (unsigned char)this->_channels);
 	if(response != R_SUCCESS)
 	{
+		this->Stop();
 		return R_SERIAL_WRITE_FAILED;
 	}
-
-	/*Wait for start ack that will be saved from the serial port reading thread
-	** Maximum wait time of 2 seconds
-	*/
-
-	//should probably use something like WaitForSingleObject() here, but thats not cross-platform so oh well
+	
 	clock_t start = clock();
 	while(!this->_receivedStartAck && (clock() - start) *1000 / CLOCKS_PER_SEC < START_ACK_TIMEOUT_MS)
 	{
@@ -90,21 +87,22 @@ int DataProtocol::Start()
 		this->Stop();
 		return R_START_ACK_TIMEOUT;
 	}
-
+	
 	LOG_DEBUG("Start ack delay time: %d ms", (clock() - start)*1000 / CLOCKS_PER_SEC);
 		
 	if(this->_startAck != (unsigned char)(START_COMMAND | this->_channels))
 	{
 		LOG_ERROR("Improper start ack.  Received: %d    Expected: %d", this->_startAck, this->_channels | START_COMMAND);
+		
 		this->Stop();
 		return R_WRONG_START_ACK;
 	}
 
 	//start the thread that actually interfaces with an application / algorithm
-	
 	this->_syncThreadHandle = (HANDLE) _beginthread(	DataProtocol::StaticThreadStart, 
 														0, 
 														this);
+
 	return R_SUCCESS;
 }
 
@@ -116,10 +114,9 @@ int DataProtocol::Stop()
 		if(response != R_SUCCESS)
 		{
 			LOG_ERROR("Writing 0 to stop serial port communication - response code %d", response);
-			this->_serial->Close();
-			return R_UNKNOWN_FAIL;
+			return false;
 		}
-
+		
 		response = this->_serial->Close();
 		if(response != R_SUCCESS)
 		{
@@ -275,7 +272,7 @@ void DataProtocol::CopyData(unsigned int*** source, unsigned int*** destination)
 {
 	for(unsigned int i=0;i<this->_numChannels;i++)
 	{
-		memcpy(*source[i], &destination[i], DATA_LENGTH * sizeof(unsigned int));
+		memcpy((*source)[i], (*destination)[i], DATA_LENGTH * sizeof(unsigned int));
 	}
 }
 
@@ -289,11 +286,24 @@ void DataProtocol::MemberThreadStart()
 	}
 
 	LOG_DEBUG("Started data protocol synchronization thread");
+
 	while(this->_serial->isOpen())
 	{
 		//LOG_DEBUG("Before waitforsingleobject");
-		response = WaitForSingleObject(	this->_dataReadyEvent,
-										DATA_TIMEOUT_MS);
+
+		if(this->_isFirstLoop)
+		{
+			response = WaitForSingleObject(	this->_dataReadyEvent,
+											DATA_TIMEOUT_MS_FIRST_LOOP);
+			this->_isFirstLoop = false;
+		}
+		else
+		{
+			response = WaitForSingleObject(	this->_dataReadyEvent,
+											DATA_TIMEOUT_MS);
+		}
+
+
 		//LOG_DEBUG("waitforsingleobject returned %d", response);
 		switch(response)
 		{
@@ -317,6 +327,7 @@ void DataProtocol::MemberThreadStart()
 			break;
 
 		case WAIT_TIMEOUT:
+
 			//in case the connection stops once we're already inside the loop
 			if(this->_serial == NULL || !this->_serial->isOpen())
 				break;

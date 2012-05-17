@@ -32,5 +32,8 @@
     <ClInclude Include="PortLocationTest.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="ProtocolIntegrationTest.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
