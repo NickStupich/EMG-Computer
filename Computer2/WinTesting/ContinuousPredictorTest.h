@@ -4,7 +4,10 @@
 
 class TestOutputListener : public OutputListener
 {
-	void OnNewOutput(double* output) override {printf("Prediction: %lf\n", output[0]);}
+	void OnNewOutput(double* output) override {
+		printf("Prediction: %lf\n", output[0]);
+		Sleep(500);
+	}
 	void OnError(unsigned int code) override {
 		printf("Error: %d\n", code);}
 };
@@ -49,5 +52,9 @@ void testContinuousPredictor()
 	if(response != R_SUCCESS)
 		printf("fail5\n");
 	
+	response = p->StopConnection();
+	if(response != R_SUCCESS)
+		printf("fail6\n");
+
 	printf("Done continuous predictor test\n");
 }

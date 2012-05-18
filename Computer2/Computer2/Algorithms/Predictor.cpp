@@ -2,6 +2,7 @@
 #define _PREDICTOR_CPP
 
 #include "Predictor.h"
+#include <process.h>
 
 template<class T>
 Predictor<T>::Predictor(unsigned int channels, int numOutputs, OutputListener* outputListener, void** modelsInfo)
@@ -27,12 +28,17 @@ Predictor<T>::Predictor(unsigned int channels, int numOutputs, OutputListener* o
 	//these could probably be the same thing, but I think it's a bit easier to follow this way
 	this->_currentOutputMutex = new NMutex();
 	this->_currentPredictionMutex = new NMutex();
+
+	this->_predictionReadyEvent = CreateEvent(	NULL,
+												true, 
+												false,
+												NULL);
 }
 
 template<class T>
 Predictor<T>::~Predictor()
 {
-	//free up stuffs
+	this->_dataProtocol->Stop();
 }
 
 template<class T>
@@ -84,7 +90,9 @@ int Predictor<T>::StopCollecting()
 template<class T>
 void Predictor<T>::SetOutput(double* output)
 {
+	this->_currentOutputMutex->lock();
 	memcpy(this->_currentOutput, output, this->_numOutputs * sizeof(double));
+	this->_currentOutputMutex->unlock();
 }
 
 template<class T>
@@ -126,7 +134,12 @@ int Predictor<T>::StartPredicting()
 		LOG_ERROR("invalid state of %d", this->_state);
 		return R_INVALID_STATE;
 	}
+	
 	this->_state = PREDICTING;
+	this->_syncThreadHandle = (HANDLE) _beginthread(	Predictor<T>::StaticSyncThreadStart,
+														0,
+														this);
+
 	return R_SUCCESS;
 }
 
@@ -180,9 +193,10 @@ void Predictor<T>::SaveData(unsigned int** data)
 		
 	this->_trainingData.push_back(dataCopy);
 		
+	this->_currentOutputMutex->lock();
 	for(int i=0;i<this->_numOutputs;i++)
 		this->_trainingOutputs[i].push_back(this->_currentOutput[i]);
-		
+	this->_currentOutputMutex->unlock();
 }
 
 template<class T>
@@ -198,9 +212,7 @@ void Predictor<T>::DoPrediction(unsigned int** data)
 	memcpy(this->_currentPrediction, tempPredictions, this->_numChannels * sizeof(double));
 	this->_currentPredictionMutex->unlock();
 
-	//alert the output listener - should be done in a bit way than this
-	if(this->_outputListener != NULL)
-		this->_outputListener->OnNewOutput(this->_currentPrediction);
+	SetEvent(this->_predictionReadyEvent);
 }
 
 template<class T>
@@ -210,6 +222,73 @@ void Predictor<T>::OnError(unsigned int code)
 	{
 		this->_outputListener->OnError(code);
 	}
+}
+
+template<class T>
+void Predictor<T>::StaticSyncThreadStart(void* args)
+{
+	static_cast<Predictor<T>*>(args)->MemberSyncThreadStart();
+}
+
+template<class T>
+void Predictor<T>::MemberSyncThreadStart()
+{
+	double* predictions = new double[this->_numOutputs];
+
+	DWORD response;
+	while(this->_state == PREDICTING)
+	{
+		response = WaitForSingleObject(	this->_predictionReadyEvent,
+										DATA_TIMEOUT_MS_PREDICTION);
+		switch(response)
+		{
+		case WAIT_OBJECT_0:
+			if(!ResetEvent(this->_predictionReadyEvent))
+			{
+				LOG_ERROR("Failed to reset prediction ready event, code: %d", GetLastError());
+			}
+			else
+			{
+				//make a copy of the data that the listener is allowed to take
+				memcpy(predictions, this->_currentPrediction, this->_numOutputs * sizeof(double));
+
+				//alert the output listener
+				if(this->_outputListener != NULL)
+					this->_outputListener->OnNewOutput(predictions);
+			}
+			break;
+
+		case WAIT_TIMEOUT:
+			if(this->_state != PREDICTING)
+			{
+				//state changed but nothing stopped this, so we didn't REALLY timeout
+				break;
+			}
+			LOG_ERROR("WaitForsingleObject timed out waiting for predictions");
+			if(this->_outputListener != NULL)
+				this->_outputListener->OnError(BACKEND_ERROR_TIMEOUT);
+			break;
+
+		case WAIT_ABANDONED:
+		case WAIT_FAILED:
+			LOG_ERROR("WaitForSingleObject failed in the prediction synchronization thread, return value: %d", response);
+			break;
+
+		default:
+			LOG_ERROR("reached default part of switch statement that we shouldn't have, code: %d", response);
+			break;
+
+		}
+	}
+
+	LOG_DEBUG("Stopping prediction synchronization thread");
+}
+
+template<class T>
+int Predictor<T>::StopConnection()
+{
+	this->_state = DONE;
+	return this->_dataProtocol->Stop();
 }
 
 #endif

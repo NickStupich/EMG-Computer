@@ -35,6 +35,8 @@ public:
 	int StartPredicting();
 	int StopPredicting();
 
+	int StopConnection();
+
 	/* from DataListener */
 	void OnNewData(unsigned int** data) override;
 	void OnError(unsigned int code) override;
@@ -60,8 +62,14 @@ private:
 	double* _currentPrediction;
 	NMutex* _currentPredictionMutex;
 
+	HANDLE _predictionReadyEvent;
+	HANDLE _syncThreadHandle;
+
 	void DoPrediction(unsigned int** data);
 	void SaveData(unsigned int** data);
+
+	static void StaticSyncThreadStart(void * args);
+	void MemberSyncThreadStart();
 };
 
 //ugly hack to make things compile

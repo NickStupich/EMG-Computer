@@ -105,7 +105,7 @@ void ContinuousModel::CalculateSlopeAndInts(std::vector<unsigned int**> data, st
 		{
 			for(i=0;i<data.size();i++)
 			{
-				singleData[i] = log10((double)data[i][input][bin]);
+				singleData[i] = data[i][input][bin] > 0 ? log10((double)data[i][input][bin]) : 0;
 			}
 
 			this->LineOfBestFit(singleData, output, &this->_slopes[input][bin], &this->_yInts[input][bin]);
@@ -140,7 +140,8 @@ double ContinuousModel::Predict(unsigned int** data)
 	{
 		for(int bin = 0; bin < DATA_LENGTH;bin++)
 		{
-			pred = log10((double)data[input][bin]) * this->_slopes[input][bin] + this->_yInts[input][bin];
+			pred = log10(data[input][bin] > 0 ? (double)data[input][bin] : 1) 
+				* this->_slopes[input][bin] + this->_yInts[input][bin];
 			num += this->_pearsons[input][bin] * pred;
 		}
 	}
