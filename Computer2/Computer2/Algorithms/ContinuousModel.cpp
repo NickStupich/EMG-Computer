@@ -15,6 +15,11 @@ ContinuousModel::ContinuousModel(int numInputs)
 	}
 }
 
+ContinuousModel::~ContinuousModel()
+{
+
+}
+
 int ContinuousModel::Train(std::vector<unsigned int**> data, std::vector<double> output, void* info)
 {
 	if(data.size() != output.size())

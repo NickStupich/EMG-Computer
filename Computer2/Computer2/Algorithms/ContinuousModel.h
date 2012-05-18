@@ -10,6 +10,7 @@ class ContinuousModel : public Model
 {
 public:
 	ContinuousModel(int numInputs);
+	~ContinuousModel();
 	int Train(std::vector<unsigned int**> data, std::vector<double> output, void* info) override;
 	double Predict(unsigned int** data) override;
 

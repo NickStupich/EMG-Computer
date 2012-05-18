@@ -9,6 +9,7 @@ public:
 	Model(int numInputs){
 		this->_numInputs = numInputs;
 	}
+	~Model(){}
 
 	virtual int Train(std::vector<unsigned int**> data, std::vector<double> output, void* info){return 0;}
 	virtual double Predict(unsigned int** data){return 0;}
