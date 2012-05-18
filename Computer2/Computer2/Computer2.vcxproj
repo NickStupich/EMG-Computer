@@ -75,6 +75,9 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Algorithms\Model.h" />
+    <ClInclude Include="Algorithms\OutputListener.h" />
+    <ClInclude Include="Algorithms\Predictor.h" />
     <ClInclude Include="DataProtocol\DataListener.h" />
     <ClInclude Include="DataProtocol\DataProtocol.h" />
     <ClInclude Include="DataProtocol\Serial.h" />
@@ -89,6 +92,7 @@
     <ClInclude Include="DataProtocol\WinSerial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Algorithms\Predictor.cpp" />
     <ClCompile Include="DataProtocol\DataProtocol.cpp" />
     <ClCompile Include="DataProtocol\WinSerialPortLocation.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -15,6 +15,7 @@
 #define R_PORT_NOT_KNOWN		10
 
 #define R_NO_DATA_AVAILABLE		11
+#define R_INVALID_STATE			12
 
 
 #endif

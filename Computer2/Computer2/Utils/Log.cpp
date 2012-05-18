@@ -31,7 +31,7 @@ void log(Priority priority, char* file, char* function, int line, char* msg, ...
 
 			char* base = getenv("APPDATA");
 			char* folder = "\\Musclemate";
-			char* musclemateFolder = (char*) malloc((strlen(base) + strlen(folder)) * sizeof(char));
+			char* musclemateFolder = new char[strlen(base) + strlen(folder)];
 			sprintf_s(musclemateFolder, strlen(musclemateFolder), "%s%s", base, folder);
 
 			int resp = _mkdir(musclemateFolder);
@@ -39,7 +39,7 @@ void log(Priority priority, char* file, char* function, int line, char* msg, ...
 				|| resp == 17	//folder already exists
 				|| 1)
 			{
-				char* filename = (char*) malloc((strlen(musclemateFolder) + strlen(name) + 1) * sizeof(char));
+				char* filename = new char[strlen(musclemateFolder) + strlen(name) + 1];
 				sprintf_s(filename, strlen(filename), "%s\\%s", musclemateFolder, name);
 				
 				//free(musclemateFolder);

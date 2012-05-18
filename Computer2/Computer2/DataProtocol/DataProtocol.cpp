@@ -12,8 +12,6 @@
 #define COM_PORT		L"COM4"
 #define START_COMMAND	1<<7
 
-#define ONES_IN_BYTE(x)	(x&(1<<7)) + (x&(1<<6)) + (x&(1<<5)) + (x&(1<<4)) + (x&(1<<3)) + (x&(1<<2)) + (x&(1<<1)) + (x&1)
-
 DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 {
 	this->_channels = channels;
@@ -41,6 +39,8 @@ DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 											true, 
 											false, 
 											NULL);
+
+	this->_isRunning = false;
 }
 
 int DataProtocol::Start()
@@ -50,8 +50,10 @@ int DataProtocol::Start()
 	{
 		response = this->DoStart();
 		if(response == R_SUCCESS)
+		{
+			this->_isRunning = true;
 			return R_SUCCESS;
-
+		}
 		LOG_ERROR("Start attempt %d / %d failed with error code %d", retry, NUM_RETRIES_START, response);
 		this->Stop();
 	}
@@ -125,6 +127,7 @@ int DataProtocol::DoStart()
 
 int DataProtocol::Stop()
 {
+	this->_isRunning = false;
 	if(this->_serial != NULL && this->_serial->isOpen())
 	{
 		int response = this->_serial->Write(0);
@@ -304,7 +307,7 @@ void DataProtocol::MemberThreadStart()
 
 	LOG_DEBUG("Started data protocol synchronization thread");
 
-	while(this->_serial->isOpen())
+	while(this->IsRunning())
 	{
 		//LOG_DEBUG("Before waitforsingleobject");
 
@@ -366,4 +369,9 @@ void DataProtocol::MemberThreadStart()
 	}
 
 	LOG_DEBUG("Stopping data protocol synchronization thread");
+}
+
+bool DataProtocol::IsRunning()
+{
+	return this->_isRunning;
 }

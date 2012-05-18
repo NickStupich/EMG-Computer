@@ -35,7 +35,12 @@ public:
 	GetData() can be polled for new data
 	*/
 	DataProtocol(unsigned int channels, DataListener* dataListener);
-
+	
+	/* 
+	Deconstructor
+	*/
+	~DataProtocol();
+	
 	/*
 	Starts the bluetooth connection, sends appropriate start command,
 	threads and whatnot to read serial data
@@ -53,8 +58,15 @@ public:
 	*/
 	int GetData(unsigned int*** data);
 
-	~DataProtocol();
+	/*
+	Called by the serial port.  Don't call this unless you're a serial port
+	*/
 	void AddByte(unsigned char n);
+
+	/* 
+	whether everything is connected up and running
+	*/
+	bool IsRunning();
 
 private:
 	unsigned int* _gains;
@@ -66,7 +78,7 @@ private:
 
 	unsigned int _channelIndex;
 	unsigned int _dataIndex;
-
+	bool _isRunning;
 
 	unsigned char _startAck;
 	bool _receivedStartAck;

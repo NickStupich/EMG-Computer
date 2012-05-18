@@ -4,6 +4,7 @@
 #include "ProtocolTest.h"
 #include "PortLocationTest.h"
 #include "ProtocolIntegrationTest.h"
+#include "PredictorTest.h"
 
 
 int main(int argc, char* argv[])
@@ -14,7 +15,8 @@ int main(int argc, char* argv[])
 	//createRegistryKeys();
 	//testPortLocation();
 	
-	TestProtocolIntegration();
+	//TestProtocolIntegration();
+	testPredictor();
 
 	printf("done testing, enter to quit\n");
 	getchar();
