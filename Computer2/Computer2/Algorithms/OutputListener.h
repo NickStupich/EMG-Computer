@@ -1,5 +1,10 @@
+#ifndef _OUTPUT_LISTENER
+#define _OUTPUT_LISTENER
+
 class OutputListener{
 public:
-	void OnNewOutput(double* output);
-	void OnError(unsigned int code);
+	virtual void OnNewOutput(double* output){};
+	virtual void OnError(unsigned int code){};
 };
+
+#endif

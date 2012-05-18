@@ -1,3 +1,6 @@
+#ifndef _PREDICTOR_CPP
+#define _PREDICTOR_CPP
+
 #include "Predictor.h"
 
 template<class T>
@@ -117,10 +120,11 @@ int Predictor<T>::StopPredicting()
 template<class T>
 void Predictor<T>::OnNewData(unsigned int** data)
 {
+	/*
 	switch(this->_state)
 	{
 
-	}
+	}*/
 }
 
 template<class T>
@@ -131,3 +135,5 @@ void Predictor<T>::OnError(unsigned int code)
 		this->_outputListener->OnError(code);
 	}
 }
+
+#endif

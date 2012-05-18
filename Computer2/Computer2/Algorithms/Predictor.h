@@ -1,8 +1,13 @@
+#ifndef _PREDICTOR_H
+#define _PREDICTOR_H
+
 #include "OutputListener.h"
 #include "../DataProtocol/DataListener.h"
 #include "../DataProtocol/DataProtocol.h"
 #include "../Utils/Constants.h"
 #include "../Utils/NMutex.h"
+#include "OutputListener.h"
+#include "Model.h"
 #include <vector>
 
 enum PredictorState{
@@ -51,3 +56,9 @@ private:
 
 	void** _modelsInfo;
 };
+
+//ugly hack to make things compile
+//source: http://forums.codeguru.com/showthread.php?t=250284
+#include "Predictor.cpp"
+
+#endif

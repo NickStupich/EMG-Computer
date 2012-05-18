@@ -4,8 +4,9 @@
 class TestModel : public Model
 {
 public:
-	virtual int Train(std::vector<int**> data, std::vector<double> output);
-	virtual double Predict(unsigned int** data);
+	TestModel(void) : Model() {}
+	int Train(std::vector<int**> data, std::vector<double> output){return 0;}
+	double Predict(unsigned int** data){return 0;}
 };
 
 void testPredictor()
