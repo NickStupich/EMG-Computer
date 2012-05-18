@@ -75,6 +75,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Algorithms\ContinuousModel.h" />
     <ClInclude Include="Algorithms\Model.h" />
     <ClInclude Include="Algorithms\OutputListener.h" />
     <ClInclude Include="Algorithms\Predictor.h" />
@@ -82,6 +83,7 @@
     <ClInclude Include="DataProtocol\DataProtocol.h" />
     <ClInclude Include="DataProtocol\Serial.h" />
     <ClInclude Include="DataProtocol\SerialPortLocation.h" />
+    <ClInclude Include="Utils\CommonFuncs.h" />
     <ClInclude Include="Utils\Constants.h" />
     <ClInclude Include="Utils\Log.h" />
     <ClInclude Include="Utils\NMutex.h" />
@@ -92,6 +94,7 @@
     <ClInclude Include="DataProtocol\WinSerial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Algorithms\ContinuousModel.cpp" />
     <ClCompile Include="Algorithms\Predictor.cpp" />
     <ClCompile Include="DataProtocol\DataProtocol.cpp" />
     <ClCompile Include="DataProtocol\WinSerialPortLocation.cpp" />
@@ -100,6 +103,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="DataProtocol\WinSerial.cpp" />
+    <ClCompile Include="Utils\CommonFuncs.cpp" />
     <ClCompile Include="Utils\Log.cpp" />
     <ClCompile Include="Utils\NMutex.cpp" />
   </ItemGroup>

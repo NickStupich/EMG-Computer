@@ -1,16 +1,12 @@
 #include "DataProtocol.h"
 #include "SerialPortLocation.h"
 #include "../Utils/Constants.h"
+#include "../Utils/CommonFuncs.h"
 
 //threading
 #ifdef WIN32
 #include <process.h>
 #endif
-
-#define CONTROL_BYTE	255
-#define DATA_LENGTH		8
-#define COM_PORT		L"COM4"
-#define START_COMMAND	1<<7
 
 DataProtocol::DataProtocol(unsigned int channels, DataListener* dataListener)
 {
@@ -288,14 +284,6 @@ void DataProtocol::StaticThreadStart(void* args)
 	static_cast<DataProtocol*>(args)->MemberThreadStart();
 }
 
-void DataProtocol::CopyData(unsigned int*** source, unsigned int*** destination)
-{
-	for(unsigned int i=0;i<this->_numChannels;i++)
-	{
-		memcpy((*source)[i], (*destination)[i], DATA_LENGTH * sizeof(unsigned int));
-	}
-}
-
 void DataProtocol::MemberThreadStart()
 {
 	DWORD response;
@@ -338,7 +326,7 @@ void DataProtocol::MemberThreadStart()
 				if(this->_dataListener != NULL)
 				{
 					this->_dataMutex->lock();
-					this->CopyData(&externalData, &this->_cleanData);
+					CopyProtocolData(&this->_cleanData, &externalData, this->_numChannels);
 					this->_dataMutex->unlock();
 
 					this->_dataListener->OnNewData(externalData);

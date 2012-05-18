@@ -5,7 +5,7 @@
 #include "PortLocationTest.h"
 #include "ProtocolIntegrationTest.h"
 #include "PredictorTest.h"
-
+#include "ContinuousPredictorTest.h"
 
 int main(int argc, char* argv[])
 {
@@ -16,7 +16,8 @@ int main(int argc, char* argv[])
 	//testPortLocation();
 	
 	//TestProtocolIntegration();
-	testPredictor();
+	//testPredictor();
+	testContinuousPredictor();
 
 	printf("done testing, enter to quit\n");
 	getchar();

@@ -83,6 +83,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ContinuousPredictorTest.h" />
     <ClInclude Include="PortLocationTest.h" />
     <ClInclude Include="PredictorTest.h" />
     <ClInclude Include="ProtocolIntegrationTest.h" />

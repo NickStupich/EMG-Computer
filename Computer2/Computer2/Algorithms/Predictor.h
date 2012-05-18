@@ -5,6 +5,7 @@
 #include "../DataProtocol/DataListener.h"
 #include "../DataProtocol/DataProtocol.h"
 #include "../Utils/Constants.h"
+#include "../Utils/CommonFuncs.h"
 #include "../Utils/NMutex.h"
 #include "OutputListener.h"
 #include "Model.h"
@@ -55,6 +56,12 @@ private:
 	NMutex* _currentOutputMutex;
 
 	void** _modelsInfo;
+
+	double* _currentPrediction;
+	NMutex* _currentPredictionMutex;
+
+	void DoPrediction(unsigned int** data);
+	void SaveData(unsigned int** data);
 };
 
 //ugly hack to make things compile

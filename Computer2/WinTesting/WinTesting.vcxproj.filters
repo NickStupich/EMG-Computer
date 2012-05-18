@@ -38,5 +38,8 @@
     <ClInclude Include="PredictorTest.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="ContinuousPredictorTest.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

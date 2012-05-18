@@ -2,8 +2,7 @@
 
 #include "Serial.h"
 #include <process.h>
-
-#define READ_BUFFER_SIZE	10
+#include "../Utils/Constants.h"
 
 Serial::Serial(wchar_t* port, int baudRate, DataProtocol* protocol)
 {
@@ -36,11 +35,13 @@ int Serial::Open()
 								0,
 								OPEN_EXISTING,
 								FILE_ATTRIBUTE_NORMAL,
-								0);	
++								0);	
 
 	if(this->_handle == INVALID_HANDLE_VALUE)
 	{
 		DWORD err = GetLastError();
+		CloseHandle(this->_handle);
+
 		if(err == ERROR_FILE_NOT_FOUND)
 		{
 			LOG_ERROR("port not found");
@@ -95,7 +96,8 @@ int Serial::Open()
 
 error:
 	LOG_DEBUG("Closing handle due to error opening");
-	this->Close();
+	CloseHandle(this->_handle);
+	this->_isOpen = false;
 
 	return R_UNKNOWN_FAIL;
 }
