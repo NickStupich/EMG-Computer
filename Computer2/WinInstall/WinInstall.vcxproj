@@ -72,6 +72,13 @@
   <ItemGroup>
     <ClInclude Include="InstallBluetooth.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="InstallBluetooth.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="bthprops.lib" />
+    <Library Include="SetupAPI.Lib" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

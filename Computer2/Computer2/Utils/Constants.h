@@ -15,3 +15,6 @@
 #define CONTROL_BYTE	255
 #define DATA_LENGTH		8
 #define START_COMMAND	1<<7
+
+#define WIN_REG_KEY_FOLDER				TEXT("SOFTWARE\\MuscleMate")
+#define WIN_REG_KEY_SERIAL				TEXT("Serial")

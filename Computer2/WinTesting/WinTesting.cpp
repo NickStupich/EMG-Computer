@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "InstallTesting.h"
 #include "SerialTest.h"
 #include "ProtocolTest.h"
 #include "PortLocationTest.h"
@@ -9,6 +10,8 @@
 
 int main(int argc, char* argv[])
 {
+	TestInstall();
+	
 	//testSerial();
 	//testProtocol();
 	
@@ -19,6 +22,7 @@ int main(int argc, char* argv[])
 	//testPredictor();
 	testContinuousPredictor();
 
+	
 	printf("done testing, enter to quit\n");
 	getchar();
 	return 0;

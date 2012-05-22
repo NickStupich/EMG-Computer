@@ -15,7 +15,7 @@ int GetPortLocation(wchar_t** buf)
 	LPDWORD type = 0;
 
 	ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-						TEXT("SOFTWARE\\MuscleMate"),
+						WIN_REG_KEY_FOLDER,
 						0, 
 						KEY_QUERY_VALUE,
 						&key);
@@ -27,7 +27,7 @@ int GetPortLocation(wchar_t** buf)
 	}
 
 	ret = RegQueryValueEx(	key,
-							TEXT("Serial"),
+							WIN_REG_KEY_SERIAL,
 							0,
 							0,
 							(LPBYTE) (*buf),
