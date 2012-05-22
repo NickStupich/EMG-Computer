@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Computer2", "Computer2\Comp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinTesting", "WinTesting\WinTesting.vcxproj", "{E43F3FF3-CA90-4EBE-B977-2913C76CF7BC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinInstall", "WinInstall\WinInstall.vcxproj", "{F6D471D7-0834-4F78-BAB7-E10214869283}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +21,10 @@ Global
 		{E43F3FF3-CA90-4EBE-B977-2913C76CF7BC}.Debug|Win32.Build.0 = Debug|Win32
 		{E43F3FF3-CA90-4EBE-B977-2913C76CF7BC}.Release|Win32.ActiveCfg = Release|Win32
 		{E43F3FF3-CA90-4EBE-B977-2913C76CF7BC}.Release|Win32.Build.0 = Release|Win32
+		{F6D471D7-0834-4F78-BAB7-E10214869283}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F6D471D7-0834-4F78-BAB7-E10214869283}.Debug|Win32.Build.0 = Debug|Win32
+		{F6D471D7-0834-4F78-BAB7-E10214869283}.Release|Win32.ActiveCfg = Release|Win32
+		{F6D471D7-0834-4F78-BAB7-E10214869283}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

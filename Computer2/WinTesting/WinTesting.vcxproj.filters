@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinTesting.cpp">
@@ -39,6 +40,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ContinuousPredictorTest.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InstallTesting.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
