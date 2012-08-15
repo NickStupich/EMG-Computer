@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[])
 {
-	TestInstall();
+	//TestInstall();
 	
 	//testSerial();
 	//testProtocol();
@@ -20,7 +20,8 @@ int main(int argc, char* argv[])
 	
 	//TestProtocolIntegration();
 	//testPredictor();
-	testContinuousPredictor();
+	//testContinuousPredictor();
+	testBinaryPrediction();
 
 	
 	printf("done testing, enter to quit\n");

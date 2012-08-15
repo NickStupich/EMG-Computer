@@ -8,12 +8,12 @@ void testSerial()
 	int response;
 	printf("Running serial test");
 
-	Serial* ser = new Serial(COM_PORT, 57600, NULL);
+	Serial* ser = new Serial(COM_PORT, 115200, NULL);
 	response = ser->Open();
 	if(response != R_SUCCESS)
 		printf("Failed test 1");
 
-	Serial* ser2 = new Serial(COM_PORT, 57600, NULL);
+	Serial* ser2 = new Serial(COM_PORT, 115200, NULL);
 	response = ser2->Open();
 	if(response != R_ACCESS_DENIED)
 		printf("Failed test2");
@@ -30,7 +30,7 @@ void testSerial()
 	if(response != R_SUCCESS)
 		printf("Failed test5");
 		
-	Serial* ser3 = new Serial(COM_PORT, 57600, NULL);
+	Serial* ser3 = new Serial(COM_PORT, 115200, NULL);
 	response = ser3->Open();
 	if(response != R_SUCCESS)
 		printf("Failed test6");

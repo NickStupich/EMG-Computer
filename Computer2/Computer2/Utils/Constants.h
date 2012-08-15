@@ -6,15 +6,26 @@
 #define DATA_TIMEOUT_MS_FIRST_LOOP		2000
 #define DATA_STOP_TIMEOUT				5000
 #define DATA_TIMEOUT_MS_PREDICTION		1000
+#define STOP_READ_THREAD_TIMEOUT		1000
 
-#define READ_BUFFER_SIZE	10
+#define READ_BUFFER_SIZE				10
 
 #define NUM_RETRIES_START				3
 
 //data protocol constants
-#define CONTROL_BYTE	255
-#define DATA_LENGTH		8
-#define START_COMMAND	1<<7
+#define	COMMAND_LENGTH					4
+#define CONTROL_BYTE					255
+#define DATA_LENGTH						10
+
+#define	COMMAND_INDEX					0
+#define	CHANNELS_INDEX					1
+
+#define	START_TIME_COMMAND				4
+#define	START_FFT_COMMAND				2
+#define	STOP_COMMAND					1
+#define	ENTER_ISP_COMMAND				8
+
+#define START_COMMAND					1<<7
 
 #define WIN_REG_KEY_FOLDER				TEXT("SOFTWARE\\MuscleMate")
 #define WIN_REG_KEY_SERIAL				TEXT("Serial")

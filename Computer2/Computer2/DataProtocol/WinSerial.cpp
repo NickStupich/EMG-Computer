@@ -10,6 +10,7 @@ Serial::Serial(wchar_t* port, int baudRate, DataProtocol* protocol)
 	this->_protocol = protocol;
 	switch(baudRate){
 		case 57600: this->_baud = CBR_57600; break;
+		case 115200: this->_baud = CBR_115200; break;
 		default: this->_baud = NULL; break;
 	}
 	this->_isOpen = false;
@@ -35,7 +36,7 @@ int Serial::Open()
 								0,
 								OPEN_EXISTING,
 								FILE_ATTRIBUTE_NORMAL,
-+								0);	
+								0);	
 
 	if(this->_handle == INVALID_HANDLE_VALUE)
 	{
@@ -89,6 +90,14 @@ int Serial::Open()
 
 	this->_isOpen = true;
 
+	//read anything on the line to empty it up
+	unsigned char buf[5];
+	DWORD bytesRead;
+	do{
+		ReadFile(this->_handle, buf, 5, &bytesRead, NULL);
+		LOG_DEBUG("Clearing COM line in start, read %d bytes", bytesRead);
+	} while (bytesRead > 0);
+
 	//start up the read thread
 	this->_readThreadHandle = (HANDLE) _beginthread(Serial::StaticThreadStart, 0, this);
 
@@ -109,6 +118,16 @@ int Serial::Close()
 		this->_isOpen = false;
 		//read thread will automatically stop once _isOpen is false
 		CloseHandle(this->_handle);
+	}
+
+	DWORD result = WaitForSingleObject(this->_readThreadHandle, STOP_READ_THREAD_TIMEOUT);
+	if(result != WAIT_OBJECT_0)
+	{
+		LOG_ERROR("Stopping read thread failed with code: %d", result);
+	}
+	else
+	{
+		LOG_DEBUG("Join on read thread worked");
 	}
 
 	return R_SUCCESS;
@@ -178,7 +197,10 @@ void Serial::MemberThreadStart(void* args)
 			for(unsigned int i=0;i<bytesRead;i++)
 			{
 				if(this->_protocol != NULL)
+				{
+					//LOG_DEBUG("Received  byte: %d", (unsigned int)buf[i]);
 					this->_protocol->AddByte(buf[i]);
+				}
 				else
 					LOG_DEBUG("No protocol object, but still received: %d", (unsigned int)buf[i]);
 			}

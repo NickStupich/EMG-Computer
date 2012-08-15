@@ -5,6 +5,7 @@
 #include "DataListener.h"
 #include "Serial.h"
 #include "../Utils/NMutex.h"
+#include "../Utils/Constants.h"
 
 #define BACKEND_ERROR_TIMEOUT		10
 
@@ -80,8 +81,8 @@ private:
 	unsigned int _dataIndex;
 	bool _isRunning;
 
-	unsigned char _startAck;
-	bool _receivedStartAck;
+	unsigned char _startAck[COMMAND_LENGTH];
+	unsigned int _startAckIndex;
 	bool _isFirstLoop;
 	ExpectedNext _expected;
 

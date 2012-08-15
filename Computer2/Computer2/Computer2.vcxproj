@@ -75,10 +75,12 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Algorithms\BinaryModel.h" />
     <ClInclude Include="Algorithms\ContinuousModel.h" />
     <ClInclude Include="Algorithms\Model.h" />
     <ClInclude Include="Algorithms\OutputListener.h" />
     <ClInclude Include="Algorithms\Predictor.h" />
+    <ClInclude Include="Algorithms\svm.h" />
     <ClInclude Include="DataProtocol\DataListener.h" />
     <ClInclude Include="DataProtocol\DataProtocol.h" />
     <ClInclude Include="DataProtocol\Serial.h" />
@@ -94,8 +96,10 @@
     <ClInclude Include="DataProtocol\WinSerial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Algorithms\BinaryModel.cpp" />
     <ClCompile Include="Algorithms\ContinuousModel.cpp" />
     <ClCompile Include="Algorithms\Predictor.cpp" />
+    <ClCompile Include="Algorithms\svm.cpp" />
     <ClCompile Include="DataProtocol\DataProtocol.cpp" />
     <ClCompile Include="DataProtocol\WinSerialPortLocation.cpp" />
     <ClCompile Include="stdafx.cpp">

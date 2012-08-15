@@ -61,8 +61,12 @@ int DataProtocol::Start()
 int DataProtocol::DoStart()
 {
 	int response;
+	int i;
+	unsigned char bytesToSend[COMMAND_LENGTH] = {0, 0, 0, 0};
 
 	wchar_t* portAddr;
+	
+	this->_startAckIndex = 0;
 	this->_isFirstLoop = true;
 
 	response = GetPortLocation(&portAddr);
@@ -72,10 +76,9 @@ int DataProtocol::DoStart()
 		return R_PORT_NOT_KNOWN;
 	}
 
-	this->_serial = new Serial(portAddr, 57600, this);
+	this->_serial = new Serial(portAddr, 115200, this);
 
-	this->_receivedStartAck = false;
-	this->_expected = FIRST;
+	this->_expected = GAIN;
 
 	response = this->_serial->Open();
 	if(response != R_SUCCESS)
@@ -83,7 +86,11 @@ int DataProtocol::DoStart()
 		return R_SERIAL_NOT_OPEN;
 	}
 
-	response = this->_serial->Write(START_COMMAND | (unsigned char)this->_channels);
+	bytesToSend[COMMAND_INDEX] = START_FFT_COMMAND;
+	bytesToSend[CHANNELS_INDEX] = (unsigned char)this->_channels;
+
+	response = this->_serial->Write(bytesToSend, COMMAND_LENGTH);
+
 	if(response != R_SUCCESS)
 	{
 		this->Stop();
@@ -91,12 +98,12 @@ int DataProtocol::DoStart()
 	}
 	
 	clock_t start = clock();
-	while(!this->_receivedStartAck && (clock() - start) *1000 / CLOCKS_PER_SEC < START_ACK_TIMEOUT_MS)
+	while(this->_startAckIndex < COMMAND_LENGTH && (clock() - start) *1000 / CLOCKS_PER_SEC < START_ACK_TIMEOUT_MS)
 	{
 		Sleep(50);
 	}
 
-	if(!this->_receivedStartAck)
+	if(this->_startAckIndex < COMMAND_LENGTH)
 	{
 		LOG_ERROR("Failed to receive start ack in time");
 		this->Stop();
@@ -105,9 +112,11 @@ int DataProtocol::DoStart()
 	
 	LOG_DEBUG("Start ack delay time: %d ms", (clock() - start)*1000 / CLOCKS_PER_SEC);
 		
-	if(this->_startAck != (unsigned char)(START_COMMAND | this->_channels))
+	if(memcmp(this->_startAck, bytesToSend, sizeof(unsigned char) * COMMAND_LENGTH))
 	{
-		LOG_ERROR("Improper start ack.  Received: %d    Expected: %d", this->_startAck, this->_channels | START_COMMAND);
+		LOG_ERROR("Improper start ack.  Received: %d %d %d %d    Expected: %d %d %d %d", 
+			this->_startAck[0], this->_startAck[1], this->_startAck[2], this->_startAck[3],
+			bytesToSend[0], bytesToSend[1], bytesToSend[2], bytesToSend[3]);
 		
 		this->Stop();
 		return R_WRONG_START_ACK;
@@ -126,7 +135,8 @@ int DataProtocol::Stop()
 	this->_isRunning = false;
 	if(this->_serial != NULL && this->_serial->isOpen())
 	{
-		int response = this->_serial->Write(0);
+		unsigned char stopCmd[COMMAND_LENGTH] = {STOP_COMMAND, 0, 0, 0};
+		int response = this->_serial->Write(stopCmd, COMMAND_LENGTH);
 		if(response != R_SUCCESS)
 		{
 			LOG_ERROR("Writing 0 to stop serial port communication - response code %d", response);
@@ -139,6 +149,8 @@ int DataProtocol::Stop()
 			LOG_ERROR("closing serial port - response code %d", response);
 			return R_UNKNOWN_FAIL;
 		}
+
+
 	}
 
 	return R_SUCCESS;
@@ -164,10 +176,9 @@ int DataProtocol::GetData(unsigned int*** data)
 
 void DataProtocol::AddByte(unsigned char n)
 {
-	if(!this->_receivedStartAck)
+	if(this->_startAckIndex < COMMAND_LENGTH)
 	{
-		this->_startAck = n;
-		this->_receivedStartAck = true;
+		this->_startAck[this->_startAckIndex++] = n;
 		return;
 	}
 
@@ -356,7 +367,7 @@ void DataProtocol::MemberThreadStart()
 		}
 	}
 
-	LOG_DEBUG("Stopping data protocol synchronization thread");
+	LOG_DEBUG("Data protocol synchronization thread is stopping");
 }
 
 bool DataProtocol::IsRunning()
