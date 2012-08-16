@@ -63,9 +63,6 @@ int BinaryModel::Train(std::vector<unsigned int**> data, std::vector<double> out
 	for(i=0;i<prob.l;i++)
 	{
 		prob.y[i] = output[i];
-		//prob.x[i] = (struct svm_node*) malloc(sizeof(struct svm_node));
-		//prob.x[i][0].index = -1;
-		//prob.x[i][0].value = output[i];
 		prob.x[i] = (struct svm_node*) malloc(this->_numInputs * DATA_LENGTH * sizeof(struct svm_node));
 		for(j=0;j<this->_numInputs;j++)
 		{
@@ -80,18 +77,21 @@ int BinaryModel::Train(std::vector<unsigned int**> data, std::vector<double> out
 		prob.x[i][this->_numInputs*DATA_LENGTH-1].index = -1;
 	}
 
-	//prob.x[prob.l-1][0].index = -1;
 
-	//set weights - to 1.0 for now
 	/*
 	param.nr_weight = 2;
 	param.weight_label = (int*) malloc(2*sizeof(int));
 	param.weight = (double*) malloc(2*sizeof(double));
 	param.weight_label[0] = 0;
-	param.weight[0] = 0.5
-		;
+	param.weight[0] = 0.9;
 	param.weight_label[1] = 1;
-	param.weight[1] = 0.5;*/
+	param.weight[1] = 0.1;
+	*/
+	
+#ifdef _DEBUG 
+	this->EvalCrossValidation(&prob, &param);
+#endif
+	
 
 	LOG_DEBUG("Before svm_train");
 	time_t start = time(NULL);
@@ -99,6 +99,9 @@ int BinaryModel::Train(std::vector<unsigned int**> data, std::vector<double> out
 	
 	
 	LOG_DEBUG("After svm train, training time: %d seconds", (time(NULL) - start));
+
+	
+	svm_destroy_param(&param);
 
 
 	return R_SUCCESS;
@@ -122,4 +125,33 @@ double BinaryModel::Predict(unsigned int** data)
 
 	result = svm_predict(this->_model, node);
 	return result;
+}
+
+void BinaryModel::EvalCrossValidation(struct svm_problem* prob, struct svm_parameter* param)
+{
+	int nFolds = 10;
+	LOG_DEBUG("Starting %d - fold cross validation", nFolds);
+	double* target = (double*) malloc(prob->l * sizeof(double));
+	
+	//do the cross validation
+	svm_cross_validation(prob, param, nFolds, target);
+
+	//build a confusion matrix
+	double confusionMatrix[2][2] = {{0, 0}, {0, 0}};
+	int i;
+	for(i=0;i<prob->l;i++)
+		confusionMatrix[(int)prob->y[i]][(int)target[i]]++;
+
+	//log matrix and overall accuracy
+	double accuracy = (confusionMatrix[0][0] + confusionMatrix[1][1]) / ((double)prob->l);
+	LOG_DEBUG("Overall accuracy: %f%%", 100.0 * accuracy);
+
+	LOG_DEBUG(	"\t\t\t\t\tPredicted class");
+	LOG_DEBUG(	"\t\t\t\t\t0\t1");
+	LOG_DEBUG(	"Actual\t\t0\t\t%d\t%d", (int)confusionMatrix[0][0], (int)confusionMatrix[0][1]);
+	LOG_DEBUG(	"\t\t\t1\t\t%d\t%d", (int)confusionMatrix[1][0], (int)confusionMatrix[1][1]);
+
+	LOG_DEBUG("Done cross validation");
+
+	free(target);
 }

@@ -22,7 +22,7 @@ public:
 
 private:
 	svm_model* _model;
-
+	void EvalCrossValidation(struct svm_problem* prob, struct svm_parameter* param);
 };
 
 #endif

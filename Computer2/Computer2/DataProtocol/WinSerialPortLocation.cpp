@@ -8,6 +8,9 @@
 
 int GetPortLocation(wchar_t** buf)
 {
+	*buf = L"COM2";
+	/*
+
 	HKEY key;
 	*buf = new wchar_t[PORT_ADDRESS_BUFFER_LENGTH];
 	DWORD bufLen = lstrlen(*buf);
@@ -40,7 +43,7 @@ int GetPortLocation(wchar_t** buf)
 	}
 
 	RegCloseKey(key);
-
+	*/
 	return R_SUCCESS;
 }
 
