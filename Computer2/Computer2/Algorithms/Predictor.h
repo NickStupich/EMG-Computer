@@ -41,6 +41,8 @@ public:
 	void OnNewData(unsigned int** data) override;
 	void OnError(unsigned int code) override;
 
+	int GetDataLength();
+
 private:
 	OutputListener* _outputListener;
 	unsigned int _channels;

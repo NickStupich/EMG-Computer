@@ -36,6 +36,12 @@ Predictor<T>::Predictor(unsigned int channels, int numOutputs, OutputListener* o
 }
 
 template<class T>
+int Predictor<T>::GetDataLength()
+{
+	return this->_trainingData.size();
+}
+
+template<class T>
 Predictor<T>::~Predictor()
 {
 	this->_dataProtocol->Stop();

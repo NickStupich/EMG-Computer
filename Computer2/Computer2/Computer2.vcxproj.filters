@@ -75,6 +75,9 @@
     <ClInclude Include="Algorithms\BinaryModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ApplicationHelpers\KeyPresser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -108,6 +111,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Algorithms\BinaryModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationHelpers\WinKeyPresser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationHelpers\KeyPresser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

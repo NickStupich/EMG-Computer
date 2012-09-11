@@ -14,6 +14,7 @@
     <ProjectGuid>{EBF71290-4CB6-44EF-899F-C7232ECE5B3D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Computer2</RootNamespace>
+    <ProjectName>EMG_BACKEND</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -81,6 +82,7 @@
     <ClInclude Include="Algorithms\OutputListener.h" />
     <ClInclude Include="Algorithms\Predictor.h" />
     <ClInclude Include="Algorithms\svm.h" />
+    <ClInclude Include="ApplicationHelpers\KeyPresser.h" />
     <ClInclude Include="DataProtocol\DataListener.h" />
     <ClInclude Include="DataProtocol\DataProtocol.h" />
     <ClInclude Include="DataProtocol\Serial.h" />
@@ -100,6 +102,8 @@
     <ClCompile Include="Algorithms\ContinuousModel.cpp" />
     <ClCompile Include="Algorithms\Predictor.cpp" />
     <ClCompile Include="Algorithms\svm.cpp" />
+    <ClCompile Include="ApplicationHelpers\KeyPresser.cpp" />
+    <ClCompile Include="ApplicationHelpers\WinKeyPresser.cpp" />
     <ClCompile Include="DataProtocol\DataProtocol.cpp" />
     <ClCompile Include="DataProtocol\WinSerialPortLocation.cpp" />
     <ClCompile Include="stdafx.cpp">
