@@ -12,7 +12,7 @@ Helper class, will get the user to train the system, and fake key presses whenev
 typedef struct{
 	WORD key;
 	char* keyDescription;
-	double probability;
+	double minProb;
 } KeyDefinition;
 
 typedef struct {
@@ -33,13 +33,15 @@ public:
 	void Train();
 	void Start();
 	void Stop();
+	void SignalKeyPresses(bool keyStates[]);
 
 private:
 	Predictor<BinaryModel> *predictor;
 	STATE state;
 	KeyPressTrainInfo info;
+	bool* previousStates;
+	int numKeys;
 	bool* currentOutputs;
-	void SignalKeyPresses(bool keyStates[], int numKeys);
 	void OnNewOutput(double* output);
 	void OnError(unsigned int code);
 };

@@ -45,5 +45,8 @@
     <ClInclude Include="InstallTesting.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="KeyPressTest.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

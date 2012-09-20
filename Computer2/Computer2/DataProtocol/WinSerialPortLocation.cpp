@@ -8,7 +8,7 @@
 
 int GetPortLocation(wchar_t** buf)
 {
-	*buf = L"COM2";
+	*buf = L"COM4";
 	/*
 
 	HKEY key;

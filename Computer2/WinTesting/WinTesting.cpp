@@ -7,6 +7,7 @@
 #include "ProtocolIntegrationTest.h"
 #include "PredictorTest.h"
 #include "ContinuousPredictorTest.h"
+#include "KeyPressTest.h"
 
 int main(int argc, char* argv[])
 {
@@ -21,8 +22,8 @@ int main(int argc, char* argv[])
 	//TestProtocolIntegration();
 	//testPredictor();
 	//testContinuousPredictor();
-	testBinaryPrediction();
-
+	//testBinaryPrediction();
+	testKeyPresser();
 	
 	printf("done testing, enter to quit\n");
 	getchar();

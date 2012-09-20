@@ -38,7 +38,7 @@ int BinaryModel::Train(std::vector<unsigned int**> data, std::vector<double> out
 	param.eps = 1e-3;
 	param.p = 0.1;
 	param.shrinking = 1;
-	param.probability = 0;
+	param.probability = 1;
 	param.nr_weight = 0;
 	param.weight_label = NULL;
 	param.weight = NULL;
@@ -89,7 +89,7 @@ int BinaryModel::Train(std::vector<unsigned int**> data, std::vector<double> out
 	*/
 	
 #ifdef _DEBUG 
-	this->EvalCrossValidation(&prob, &param);
+	//this->EvalCrossValidation(&prob, &param);
 #endif
 	
 
@@ -122,8 +122,11 @@ double BinaryModel::Predict(unsigned int** data)
 			node[n].value = data[i][k];
 		}
 	}
-
-	result = svm_predict(this->_model, node);
+	double* probs = (double*)malloc(2 * sizeof(double));
+	result = svm_predict_probability(this->_model, node, probs);
+	result = probs[1];
+	free(probs);
+	//result = svm_predict(this->_model, node);
 	return result;
 }
 
