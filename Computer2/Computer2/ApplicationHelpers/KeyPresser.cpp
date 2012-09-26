@@ -3,7 +3,8 @@
 KeyPresser::KeyPresser(KeyPressTrainInfo info)
 {
 	this->state = KP_UNTRAINED;
-	this->predictor = new Predictor<BinaryModel>(255, info.numOutputs, this, NULL);
+	//this->predictor = new Predictor<BinaryModel>(255, info.numOutputs, this, NULL);
+	this->predictor = new Predictor<ContinuousModel>(255, info.numOutputs, this, NULL);
 	this->info = info;
 	this->currentOutputs = new bool[info.numOutputs];
 	this->previousStates = new bool[info.numOutputs];
@@ -78,7 +79,9 @@ void KeyPresser::OnNewOutput(double* output)
 	for(i=0;i<this->info.numOutputs;i++)
 	{
 		this->currentOutputs[i] = output[i] > this->info.keys[i].minProb ? true : false;
+		printf("%f\t", output[i]);
 	}
+	printf("\n");
 
 	this->SignalKeyPresses(this->currentOutputs);
 	memcpy(this->previousStates, this->currentOutputs, sizeof(bool) * this->numKeys);

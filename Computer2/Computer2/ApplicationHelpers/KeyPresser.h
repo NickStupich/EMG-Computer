@@ -4,6 +4,7 @@
 #include "../Algorithms/Predictor.h"
 #include "../Algorithms/BinaryModel.h"
 #include "../Algorithms/OutputListener.h"
+#include "../Algorithms/ContinuousModel.h"
 
 /*
 Helper class, will get the user to train the system, and fake key presses whenever certains actions are recognized
@@ -36,7 +37,7 @@ public:
 	void SignalKeyPresses(bool keyStates[]);
 
 private:
-	Predictor<BinaryModel> *predictor;
+	Predictor<ContinuousModel> *predictor;
 	STATE state;
 	KeyPressTrainInfo info;
 	bool* previousStates;
