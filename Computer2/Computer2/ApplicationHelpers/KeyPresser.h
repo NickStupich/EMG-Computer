@@ -37,7 +37,9 @@ public:
 	void SignalKeyPresses(bool keyStates[]);
 
 private:
-	Predictor<ContinuousModel> *predictor;
+	//Predictor<ContinuousModel> *predictor;
+	Predictor<BinaryModel> *predictor;
+	
 	STATE state;
 	KeyPressTrainInfo info;
 	bool* previousStates;

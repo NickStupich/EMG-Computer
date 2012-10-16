@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	//TestInstall();
 	
 	//testSerial();
-	//testProtocol();
+	testProtocol();
 	
 	//createRegistryKeys();
 	//testPortLocation();
@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	//testPredictor();
 	//testContinuousPredictor();
 	//testBinaryPrediction();
-	testKeyPresser();
+	//testKeyPresser();
 	
 	printf("done testing, enter to quit\n");
 	getchar();

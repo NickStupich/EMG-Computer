@@ -3,8 +3,8 @@
 KeyPresser::KeyPresser(KeyPressTrainInfo info)
 {
 	this->state = KP_UNTRAINED;
-	//this->predictor = new Predictor<BinaryModel>(255, info.numOutputs, this, NULL);
-	this->predictor = new Predictor<ContinuousModel>(255, info.numOutputs, this, NULL);
+	this->predictor = new Predictor<BinaryModel>(255, info.numOutputs, this, NULL);
+	//this->predictor = new Predictor<ContinuousModel>(255, info.numOutputs, this, NULL);
 	this->info = info;
 	this->currentOutputs = new bool[info.numOutputs];
 	this->previousStates = new bool[info.numOutputs];
